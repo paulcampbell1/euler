@@ -4,10 +4,11 @@
 
 
 # How many such routes are there through a 20×20 grid?
+require 'set'
 start_time = Time.now
 
-grid_size = 2
-paths = []
+grid_size = 20
+paths = Set[]
 directions = []
 path = ""
 
@@ -21,29 +22,37 @@ while direction_counter < grid_size
     direction_counter += 1
 end
 
-puts "While grid size is #{grid_size}, the list of possible routes is #{directions}"
+total_steps = directions.length
+
+puts "While grid size is #{grid_size}, the list of possible directions is #{directions}, with #{total_steps} steps."
 
 #build a path from the available directions
-iterations = 10000
-
-
-while iterations > 0
-    path = ""
-    path_directions = directions
-
-    while path_directions.length > 0
-
-        steps = path_directions.length
-        index = rand(0..steps)
-
-        path << path_directions[index]
-        path_directions.delete(index)
-    end
-    paths << path
-end
-
-unique_paths = paths.uniq
-puts unique_paths.length
-puts unique_paths
-
 #take string length, pick random index, push from array and repeat until string length is zero, then check if unique
+
+iterations = 5000000
+
+#do many times to ensure spread of randomness
+counter = 0
+while counter < iterations
+    path_directions = directions.clone
+    path = ""
+    while path_directions.length > 0
+        steps = path_directions.length - 1
+        index = rand(0..steps)
+        path << path_directions[index]
+        path_directions.delete_at(index)
+    end
+    if paths === path
+      break
+    else
+      paths << path
+    end
+    counter += 1
+    if counter % 10000 == 0
+      puts path
+    end
+end
+end_time = Time.now
+elapsed_time = end_time - start_time
+puts "Outputting after #{elapsed_time} seconds"
+puts paths.length
